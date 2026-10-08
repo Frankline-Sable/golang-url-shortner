@@ -23,3 +23,7 @@ flowchart LR
 - Generates a unique short url id for every long url id
 - Stores the mappings of the shorturls -> longurls
 - Ridirects users from the short url to the original long url
+
+
+## Testing:
+curl -X  POST -d "url=https://www.google.com" http://localhost:8080/shorten
