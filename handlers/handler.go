@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang-url-shortner/models"
 	"golang-url-shortner/storage"
+	"html/template"
 	"net/http"
 )
 
@@ -29,7 +30,7 @@ func (h *Handler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// generate short url
-	shortURL := models.NewShortUrl(longUrl)
+	shortURL := models.GenerateShortURL()
 	h.store.AddToStore(shortURL, longUrl)
 
 	// responding
@@ -39,6 +40,7 @@ func (h *Handler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 
 // RedirectURL handles GET request to redirect to the originalURL
 func (h *Handler) RedirectURL(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodGet {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -52,9 +54,34 @@ func (h *Handler) RedirectURL(w http.ResponseWriter, r *http.Request) {
 	longURL, exists := h.store.GetFromStore(shortURL)
 
 	if !exists {
-		http.Error(w, "URL not found", http.StatusNotFound)
+
+		http.Error(w, "t1: URL not found", http.StatusNotFound)
 		return
 	}
 	http.Redirect(w, r, longURL, http.StatusFound)
+
+}
+
+func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
+
+	if r.URL.Path != "/" {
+		println("whats happpening")
+		http.NotFound(w, r)
+
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, nil)
 
 }

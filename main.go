@@ -15,11 +15,18 @@ func main() {
 
 	// Define routes
 	http.HandleFunc("/shorten", handler.ShortenUrl) //post shorten
-	http.HandleFunc("/", handler.RedirectURL)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		if r.URL.Path == "/" {
+			handler.Home(w, r)
+			return
+		}
+		handler.RedirectURL(w, r)
+	})
 
 	// Start the server
-	port :=":8080"
-	println("Serving on port " , port)
+	port := ":8080"
+	println("Serving on port ", port)
 
 	if err := http.ListenAndServe(port, nil); err != nil {
 		println("Error starting server:", err)
