@@ -15,7 +15,7 @@ func NewStore() *Store {
 
 // AddToStore saves the url mappings to the store
 func (s *Store) AddToStore(shortUrl, longUrl string) {
-	s.mu.Unlock() //Lock for writing
+	s.mu.Lock() //Lock for writing
 
 	defer s.mu.Unlock()        // Unlock for writing
 	s.urls[shortUrl] = longUrl // save the mapping
