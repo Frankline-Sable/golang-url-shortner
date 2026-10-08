@@ -29,3 +29,15 @@ func (s *Store) GetFromStore(shortUrl string) (string, bool) {
 
 	return longUrl, exists // return the long ur; and its existing status
 }
+
+// RemoveFromStore  deletes from the store
+func (s *Store) RemoveFromStore(shortUrl string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	_, exists := s.urls[shortUrl]
+	if !exists {
+		return false
+	}
+	delete(s.urls, shortUrl)
+	return true
+}
