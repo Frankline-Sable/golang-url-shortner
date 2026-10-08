@@ -14,11 +14,18 @@ func NewStore() *Store {
 }
 
 // AddToStore saves the url mappings to the store
-func (s *Store) AddToStore(shortURL, longURL string) {
+func (s *Store) AddToStore(shortURL, longURL string) bool {
 	s.mu.Lock() //Lock for writing
 
-	defer s.mu.Unlock()        // Unlock for writing
+	defer s.mu.Unlock() // Unlock for writing
+
+	// prevent overwrite
+	if _, exists := s.urls[shortURL]; exists {
+		return false
+	}
 	s.urls[shortURL] = longURL // save the mapping
+
+	return true
 }
 
 // GetFromStore reads the long url from store given the short one
