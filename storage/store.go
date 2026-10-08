@@ -41,3 +41,10 @@ func (s *Store) RemoveFromStore(shortURL string) bool {
 	delete(s.urls, shortURL)
 	return true
 }
+
+// GetCount To know how many shortened URLs are stored
+func (s *Store) GetCount(shortURL string) int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return len(s.urls)
+}
