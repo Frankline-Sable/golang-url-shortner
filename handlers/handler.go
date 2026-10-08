@@ -30,12 +30,30 @@ func (h *Handler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// generate short url
-	shortURL := models.GenerateShortURL()
-	h.store.AddToStore(shortURL, longUrl)
+	shortCode := models.GenerateShortURL()
+	h.store.AddToStore(shortCode, longUrl)
 
 	// responding
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("http://shorty.url/" + shortURL))
+	//w.WriteHeader(http.StatusCreated)
+	//w.Write([]byte("http://shorty.url/" + shortURL))
+
+	shortURL := "http://" + r.Host + "/" + shortCode
+
+	data := struct {
+		ShortURL string
+	}{
+		ShortURL: shortURL,
+	}
+
+	tmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
+
+	if err := tmpl.Execute(w, data); err != nil {
+		return
+	}
 }
 
 // RedirectURL handles GET request to redirect to the originalURL

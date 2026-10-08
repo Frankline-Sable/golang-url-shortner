@@ -5,21 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Go URL Shortener</title>
-    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
 </head>
 <body>
 <div class="card">
     <h1>Simple Go URL Shortner</h1>
 
-    <form action="/shorten" method="POST">
+    <form id="shortenForm">
         <input
                 type="url"
+                id="url"
                 name="url"
                 placeholder="Enter your long URL"
                 required
-        />
+        >
         <button type="submit">Shorten URL</button>
     </form>
+
+    <div id="result"></div>
 
     {{if .ShortURL}}
     <div class="result">
@@ -29,4 +32,48 @@
     {{end}}
 </div>
 </body>
+<script>
+    document.getElementById("shortenForm")
+        .addEventListener("submit", async function(event) {
+
+            // Prevent browser navigation
+            event.preventDefault();
+
+            const url = document.getElementById("url").value;
+
+            const response = await fetch("/shorten", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({ url })
+            });
+
+            const result = document.getElementById("result");
+
+            if (!response.ok) {
+                result.textContent = "Failed to shorten URL";
+                return;
+            }
+
+            const html = await response.text();
+
+            // Your current handler returns HTML, not JSON.
+            // Extract the generated link from that HTML.
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            const link = doc.querySelector(".result a");
+
+            if (!link) {
+                result.textContent = "No shortened URL returned";
+                return;
+            }
+
+            result.replaceChildren();
+
+            const anchor = document.createElement("a");
+            anchor.href = link.href;
+            anchor.textContent = link.href;
+            result.appendChild(anchor);
+        });
+</script>
 </html>

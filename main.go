@@ -24,6 +24,15 @@ func main() {
 		handler.RedirectURL(w, r)
 	})
 
+	// Tell go to handle static files
+	http.Handle(
+		"/styles/",
+		http.StripPrefix(
+			"/styles/",
+			http.FileServer(http.Dir("./styles")),
+		),
+	)
+
 	// Start the server
 	port := ":8080"
 	println("Serving on port ", port)
