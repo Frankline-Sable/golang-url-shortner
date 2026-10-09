@@ -27,3 +27,14 @@ flowchart LR
 
 ## Testing:
 curl -X  POST -d "url=https://www.google.com" http://localhost:8080/shorten
+
+
+## Building Docker:
+# Stop and remove the existing container
+docker rm -f go-shortener
+
+# Rebuild the image
+docker build -t go-url-shortener:1.0 .
+
+# Launch the updated version
+docker run -d --name go-shortener -p 8090:8080 go-url-shortener:1.0
