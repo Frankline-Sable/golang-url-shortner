@@ -3,7 +3,9 @@ package main
 import (
 	"golang-url-shortner/handlers"
 	"golang-url-shortner/storage"
+	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -34,10 +36,16 @@ func main() {
 	)
 
 	// Start the server
-	port := ":8080"
-	println("Serving on port ", port)
+	//port := ":8080"
+	port := os.Getenv("PORT")
 
-	if err := http.ListenAndServe(port, nil); err != nil {
-		println("Error starting server:", err)
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Println("Serving on port", port)
+
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
 	}
 }
